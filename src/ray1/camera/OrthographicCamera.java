@@ -9,10 +9,8 @@ public class OrthographicCamera extends Camera {
     //          formed by three basis vectors and any other helper variables 
     //          if needed.
 	public float aspectRatio;
-	public Vector3d origin; 
 	public Vector3d rayOrigin;
 	public Vector3d rayDirection;
-	public Vector3d pointOnScreen;
 	public Vector3d u;
 	public Vector3d v;
 	public Vector3d w;
@@ -27,25 +25,37 @@ public class OrthographicCamera extends Camera {
         //    based on viewDir and viewUp
         // 2) Set up the helper variables if needed
     	
+    	//local vars
+    	Vector3d U;
+    	Vector3d w_temp;
+    	Vector3d u_temp;
+    	Vector3d v_temp;
+    	
     	//calculate d from viewDir
     	this.d = Math.sqrt(Math.pow(viewDir.x,2) + Math.pow(viewDir.y,2) + Math.pow(viewDir.z,2));
     	
-    	//get the origin
-    	this.origin = new Vector3d(viewPoint.x, viewPoint.y, viewPoint.z);
-    	
-    	//orthonormal basis
-    	this.u = new Vector3d(1,0,0); //orthonormal basis
-    	this.v = new Vector3d(0,1,0); //orthonormal basis
+    	//constructing w vector first
     	this.w = new Vector3d(viewDir.x, viewDir.y, -viewDir.z);
-		
+    	w_temp = this.w;
+    	System.out.println(this.w);
+    	
+    	//constructing u vector
+    	U = w_temp.mul(viewUp);
+    	this.u = U.div(Math.sqrt(Math.pow(U.x,2) + Math.pow(U.y,2) + Math.pow(U.z,2)));
+    	
+    	//constructing v vector
+    	w_temp = this.w;
+    	this.v = w_temp.mul(this.u);
+    	
     	//setting aspect ratio for the screen
     	this.aspectRatio = viewWidth/viewHeight;
-        	
-    	//Testing
-        //System.out.print(d);
-    	//System.out.println(origin.x);
-        //System.out.println(origin.y);
-        //System.out.println(origin.z);
+        
+    	//get the origin based on the position of the eye
+    	this.rayOrigin = new Vector3d(viewPoint.x, viewPoint.y, viewPoint.z);
+    	
+    	System.out.println(this.w);
+    	System.out.println(this.u);
+    	System.out.println(this.v);
     	
     }
 
@@ -57,18 +67,20 @@ public class OrthographicCamera extends Camera {
      * @param inV The v coord of the image point (range [0,1])
      */
     public void getRay(Ray outRay, float inU, float inV) {
-    	double u_temp;
-    	double v_temp;
-    	Ray temp;
-    	u_temp = inU * viewWidth * this.u.x;
-    	v_temp = inV * viewHeight * this.v.y;
+    	double rayDirectionX = 0.0f;
+    	double rayDirectionY = 0.0f;
+    	double rayDirectionZ = 0.0f;
     	
-    	System.out.println(this.origin.x);
-        System.out.println(this.origin.y);
-        System.out.println(this.origin.z);
-    	this.pointOnScreen = new Vector3d(w.x,u_temp,v_temp);
-    	outRay = new Ray(this.origin, this.pointOnScreen.sub(viewPoint));
-    	//outRay.direction = 
+    	inU = (float) (inU + 0.5);
+    	inV = (float) (inV + 0.5);
+    	
+    	rayDirectionX = this.aspectRatio * ((2*inU)/viewWidth) - 1; 
+    	rayDirectionY = ((2 * inV)/viewHeight) - 1; 
+    
+    	outRay.direction.x = this.w.x;
+    	outRay.direction.y = rayDirectionX;
+    	outRay.direction.z = rayDirectionY;
+    	
     	
         // TODO#Ray Task 1: Fill in this function.
         // 1) Transform inU so that it lies between [-viewWidth / 2, +viewWidth / 2] 
