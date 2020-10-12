@@ -25,38 +25,31 @@ public class OrthographicCamera extends Camera {
         //    based on viewDir and viewUp
         // 2) Set up the helper variables if needed
     	
-    	//local vars
-    	Vector3d U;
-    	Vector3d w_temp;
-    	Vector3d u_temp;
-    	Vector3d v_temp;
-    	
     	//calculate d from viewDir
     	this.d = Math.sqrt(Math.pow(viewDir.x,2) + Math.pow(viewDir.y,2) + Math.pow(viewDir.z,2));
     	
     	//constructing w vector first
-    	this.w = new Vector3d(viewDir.x, viewDir.y, -viewDir.z);
-    	w_temp = this.w;
-    	System.out.println(this.w);
+    	this.w = new Vector3d(1, 0, 0);
     	
     	//constructing u vector
-    	U = w_temp.mul(viewUp);
-    	this.u = U.div(Math.sqrt(Math.pow(U.x,2) + Math.pow(U.y,2) + Math.pow(U.z,2)));
+    	this.u = new Vector3d(0, 1, 0);
     	
     	//constructing v vector
-    	w_temp = this.w;
-    	this.v = w_temp.mul(this.u);
+    	this.v = new Vector3d(0, 0, 1);
     	
     	//setting aspect ratio for the screen
     	this.aspectRatio = viewWidth/viewHeight;
         
     	//get the origin based on the position of the eye
     	this.rayOrigin = new Vector3d(viewPoint.x, viewPoint.y, viewPoint.z);
-    	
+
+    	// Basis
     	System.out.println(this.w);
     	System.out.println(this.u);
     	System.out.println(this.v);
     	
+    	//Ray direction
+    	rayDirection = new Vector3d(viewDir.x,viewDir.y,viewDir.z);
     }
 
     /**
@@ -77,9 +70,9 @@ public class OrthographicCamera extends Camera {
     	rayDirectionX = this.aspectRatio * ((2*inU)/viewWidth) - 1; 
     	rayDirectionY = ((2 * inV)/viewHeight) - 1; 
     
-    	outRay.direction.x = this.w.x;
-    	outRay.direction.y = rayDirectionX;
-    	outRay.direction.z = rayDirectionY;
+    	outRay.direction.x = this.rayDirection.x;
+    	outRay.direction.y = this.rayDirection.y;
+    	outRay.direction.z = this.rayDirection.z;
     	
     	
         // TODO#Ray Task 1: Fill in this function.
