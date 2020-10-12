@@ -24,7 +24,16 @@ public class PerspectiveCamera extends Camera {
     //TODO#Ray Task 1: create necessary new variables/objects here, including an orthonormal basis
     //          formed by three basis vectors and any other helper variables 
     //          if needed.
-
+    public float aspectRatio;
+	public Vector3d origin; 
+	public Vector3d rayOrigin;
+	public Vector3d rayDirection;
+	public Vector3d pointOnScreen;
+	public Vector3d u;
+	public Vector3d v;
+	public Vector3d w;
+	public double d;
+	
 
     /**
      * Initialize the derived view variables to prepare for using the camera.
@@ -34,7 +43,25 @@ public class PerspectiveCamera extends Camera {
         // 1) Set the 3 basis vectors in the orthonormal basis,
         // based on viewDir and viewUp
         // 2) Set up the helper variables if needed
-        
+    	//calculate d from viewDir
+    	this.d = Math.sqrt(Math.pow(viewDir.x,2) + Math.pow(viewDir.y,2) + Math.pow(viewDir.z,2));
+    	
+    	//get the origin
+    	this.origin = new Vector3d(viewPoint.x, viewPoint.y, viewPoint.z);
+    	
+    	//orthonormal basis
+    	this.u = new Vector3d(1,0,0); //orthonormal basis
+    	this.v = new Vector3d(0,1,0); //orthonormal basis
+    	this.w = new Vector3d(viewDir.x, viewDir.y, -viewDir.z);
+		
+    	//setting aspect ratio for the screen
+    	this.aspectRatio = viewWidth/viewHeight;
+        	
+    	//Testing
+        //System.out.print(d);
+    	//System.out.println(origin.x);
+        //System.out.println(origin.y);
+        //System.out.println(origin.z);
     }
 
     /**
@@ -54,6 +81,14 @@ public class PerspectiveCamera extends Camera {
         //    should depend on your transformed inU and inV and your basis vectors,
         //    as well as the projection distance.
 
-
+    	float u_temp;
+    	float v_temp;
+    	Ray temp;
+    	u_temp = inU * viewWidth;
+    	v_temp = inV * viewHeight;
+    	
+    	this.pointOnScreen = new Vector3d(w.x,u_temp,v_temp);
+    	outRay = new Ray(this.origin, this.pointOnScreen.sub(viewPoint));
+    	
     }
 }
