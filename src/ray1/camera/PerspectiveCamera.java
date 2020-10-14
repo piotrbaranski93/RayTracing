@@ -104,6 +104,6 @@ public class PerspectiveCamera extends Camera {
     	Vector3d uuvv = uu.add(vv);
     	
     	direction = new Vector3d(viewPoint.x + uuvv.x,viewPoint.y + uuvv.y,viewPoint.z + uuvv.z);
-    	System.out.printn(direction);
+    	System.out.println(direction);
     }
 }
