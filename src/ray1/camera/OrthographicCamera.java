@@ -25,17 +25,25 @@ public class OrthographicCamera extends Camera {
         //    based on viewDir and viewUp
         // 2) Set up the helper variables if needed
     	
+    	//local variables
+    	Vector3d U;
+    	Vector3d W;
+    	
     	//calculate d from viewDir
     	this.d = Math.sqrt(Math.pow(viewDir.x,2) + Math.pow(viewDir.y,2) + Math.pow(viewDir.z,2));
     	
-    	//constructing w vector first
-    	this.w = new Vector3d(1, 0, 0);
+    	//constructing w vector first toward direction of the image
+    	this.w = new Vector3d(viewDir.x, viewDir.y, viewDir.z);
     	
     	//constructing u vector
-    	this.u = new Vector3d(0, 1, 0);
+    	this.u = new Vector3d(-viewUp.y, viewUp.x, 0);
+    	//this.u.normalize();
     	
-    	//constructing v vector
-    	this.v = new Vector3d(0, 0, 1);
+    	//constructing v vector 
+    	U = new Vector3d(this.u.x, this.u.y, this.u.z);
+    	W = new Vector3d(this.w.x, this.w.y, this.w.z);
+    	this.v = W.cross(U);
+    	//this.v.normalize();
     	
     	//setting aspect ratio for the screen
     	this.aspectRatio = viewWidth/viewHeight;
@@ -44,10 +52,11 @@ public class OrthographicCamera extends Camera {
     	this.rayOrigin = new Vector3d(viewPoint.x, viewPoint.y, viewPoint.z);
 
     	// Basis
+    	System.out.println("Orthonormal basis");
     	System.out.println(this.w);
     	System.out.println(this.u);
     	System.out.println(this.v);
-    	
+    	System.out.println("Distance:" + this.d);
     	//Ray direction
     	rayDirection = new Vector3d(viewDir.x,viewDir.y,viewDir.z);
     }
@@ -60,22 +69,7 @@ public class OrthographicCamera extends Camera {
      * @param inV The v coord of the image point (range [0,1])
      */
     public void getRay(Ray outRay, float inU, float inV) {
-    	double rayDirectionX = 0.0f;
-    	double rayDirectionY = 0.0f;
-    	double rayDirectionZ = 0.0f;
-    	
-    	inU = (float) (inU + 0.5);
-    	inV = (float) (inV + 0.5);
-    	
-    	rayDirectionX = this.aspectRatio * ((2*inU)/viewWidth) - 1; 
-    	rayDirectionY = ((2 * inV)/viewHeight) - 1; 
-    
-    	outRay.direction.x = this.rayDirection.x;
-    	outRay.direction.y = this.rayDirection.y;
-    	outRay.direction.z = this.rayDirection.z;
-    	
-    	
-        // TODO#Ray Task 1: Fill in this function.
+    	// TODO#Ray Task 1: Fill in this function.
         // 1) Transform inU so that it lies between [-viewWidth / 2, +viewWidth / 2] 
         //    instead of [0, 1]. Similarly, transform inV so that its range is
         //    [-vieHeight / 2, +viewHeight / 2]
@@ -83,6 +77,37 @@ public class OrthographicCamera extends Camera {
         //    In an orthographic camera, the origin should depend on your transformed
         //    inU and inV and your basis vectors u and v.
         // 3) Set the direction field of outRay for an orthographic camera.
+    	Vector3d origin;
+    	double rayOriginU = 0.0f;
+    	double rayOriginV = 0.0f;
+    	double rayOriginZ = 0.0f;
+    	
+    	double l = -viewWidth/2;
+    	double r = viewWidth/2;
+    	
+    	double b = -viewHeight/2;
+    	double t = viewHeight/2;
+    	 
+    	double u = (l + (r-l) * (inU + 0.5))/viewWidth;
+    	double v = (b + (t-b) * (inV + 0.5))/viewHeight;
+    	
+    	Vector3d vv = this.v.mul(v);
+    	Vector3d uu = this.u.mul(u);
+    	Vector3d uuvv = uu.add(vv);
+    	
+    	origin = new Vector3d(viewPoint.x + uuvv.x,viewPoint.y + uuvv.y,viewPoint.z + uuvv.z);
+    	System.out.println(origin);
+    	
+    	//setting ray direction
+    	outRay.direction.x = this.rayDirection.x;
+    	outRay.direction.y = this.rayDirection.y;
+    	outRay.direction.z = this.rayDirection.z;
+    	
+    	//setting ray origin
+    	outRay.origin.x = rayOriginU;
+    	outRay.origin.y = rayOriginV;
+    	outRay.origin.z = rayOriginZ;
+    	
 
         
 
