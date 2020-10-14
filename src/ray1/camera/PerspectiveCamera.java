@@ -58,10 +58,8 @@ public class PerspectiveCamera extends Camera {
     	this.aspectRatio = viewWidth/viewHeight;
         	
     	//Testing
-        //System.out.print(d);
-    	//System.out.println(origin.x);
-        //System.out.println(origin.y);
-        //System.out.println(origin.z);
+    	System.out.println(origin);
+
     }
 
     /**
@@ -81,14 +79,31 @@ public class PerspectiveCamera extends Camera {
         //    should depend on your transformed inU and inV and your basis vectors,
         //    as well as the projection distance.
 
-    	float u_temp;
-    	float v_temp;
-    	Ray temp;
-    	u_temp = inU * viewWidth;
-    	v_temp = inV * viewHeight;
+    	//setting origin
+    	outRay.origin.x = this.origin.x;
+    	outRay.origin.y = this.origin.y;
+    	outRay.origin.z = this.origin.z;
     	
-    	this.pointOnScreen = new Vector3d(w.x,u_temp,v_temp);
-    	outRay = new Ray(this.origin, this.pointOnScreen.sub(viewPoint));
+    	//setting direction
+    	Vector3d direction;
+    	double rayOriginU = 0.0f;
+    	double rayOriginV = 0.0f;
+    	double rayOriginZ = 0.0f;
     	
+    	double l = -viewWidth/2;
+    	double r = viewWidth/2;
+    	
+    	double b = -viewHeight/2;
+    	double t = viewHeight/2;
+    	 
+    	double u = (l + (r-l) * (inU + 0.5))/viewWidth;
+    	double v = (b + (t-b) * (inV + 0.5))/viewHeight;
+    	
+    	Vector3d vv = this.v.mul(v);
+    	Vector3d uu = this.u.mul(u);
+    	Vector3d uuvv = uu.add(vv);
+    	
+    	direction = new Vector3d(viewPoint.x + uuvv.x,viewPoint.y + uuvv.y,viewPoint.z + uuvv.z);
+    	System.out.printn(direction);
     }
 }
