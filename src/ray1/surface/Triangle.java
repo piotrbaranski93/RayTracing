@@ -63,7 +63,7 @@ public class Triangle extends Surface {
    */
   public boolean intersect(IntersectionRecord outRecord, Ray rayIn) {
     // TODO#Ray Part 1 Task 2: fill in this function.
-
+	  
     
     // If there was an intersection, fill out the intersection record
 	  

@@ -38,14 +38,25 @@ public class Sphere extends Surface {
    * @return true if the surface intersects the ray
    */
   public boolean intersect(IntersectionRecord outRecord, Ray rayIn) {
-    // TODO#Ray Task 2: fill in this function.
-
-	    
+	  	// TODO#Ray Task 2: fill in this function.
+	  	Vector3d rayOrigin = rayIn.origin;
+	  	Vector3d rayDirection = rayIn.direction;
+	  	double t1 = 0;
+	  	double t2 = 0;
+	  	double t;
+	  	double y;
+	  	
+	  	//calculations
+	  	Vector3d temp = new Vector3d(this.center.x - rayOrigin.x, this.center.y - rayOrigin.y, this.center.z - rayOrigin.z);
+	  	t = temp.dot(rayIn.direction);
+	  	
+	  	//outRecord.
 	    // If there was an intersection, fill out the intersection record
 
-	  
+	  	outRecord.t = t;
+	  	outRecord.location.x = rayDirection.x;
 	    
-	    return false;
+	    return true;
   }
   
   /**
