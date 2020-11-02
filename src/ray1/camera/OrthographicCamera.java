@@ -2,6 +2,7 @@ package ray1.camera;
 
 import ray1.Ray;
 import egl.math.Vector3d;
+import egl.math.Vector3;
 
 public class OrthographicCamera extends Camera {
 
@@ -37,7 +38,8 @@ public class OrthographicCamera extends Camera {
     	
     	//constructing u vector
     	this.u = new Vector3d(-viewUp.y, viewUp.x, 0);
-    	//this.u.normalize();
+    	this.u.normalize();
+    	
     	
     	//constructing v vector 
     	U = new Vector3d(this.u.x, this.u.y, this.u.z);
@@ -52,13 +54,13 @@ public class OrthographicCamera extends Camera {
     	this.rayOrigin = new Vector3d(viewPoint.x, viewPoint.y, viewPoint.z);
 
     	// Basis
-    	System.out.println("Orthonormal basis");
-    	System.out.println(this.w);
-    	System.out.println(this.u);
-    	System.out.println(this.v);
-    	System.out.println("Distance:" + this.d);
+    	//System.out.println("Orthonormal basis");
+    	//System.out.println(this.w);
+    	//System.out.println(this.u);
+    	//System.out.println(this.v);
+    	//System.out.println("Distance:" + this.d);
     	//Ray direction
-    	rayDirection = new Vector3d(viewDir.x,viewDir.y,viewDir.z);
+    	//rayDirection = new Vector3d(viewDir.x,viewDir.y,viewDir.z);
     }
 
     /**
@@ -77,36 +79,37 @@ public class OrthographicCamera extends Camera {
         //    In an orthographic camera, the origin should depend on your transformed
         //    inU and inV and your basis vectors u and v.
         // 3) Set the direction field of outRay for an orthographic camera.
-    	Vector3d origin;
-    	double rayOriginU = 0.0f;
-    	double rayOriginV = 0.0f;
-    	double rayOriginZ = 0.0f;
+    	final Vector3d origin;
+    	Vector3d e = new Vector3d(super.viewPoint.x,super.viewPoint.y,super.viewPoint.z);
+    	//double rayOriginU = 0.0f;
+    	//double rayOriginV = 0.0f;
+    	//double rayOriginZ = 0.0f;
     	
-    	double l = -viewWidth/2;
-    	double r = viewWidth/2;
+    	double left = -viewWidth/2;
+    	double right = viewWidth/2;
     	
-    	double b = -viewHeight/2;
-    	double t = viewHeight/2;
+    	double bottom = -viewHeight/2;
+    	double top = viewHeight/2;
     	 
-    	double u = (l + (r-l) * (inU + 0.5))/viewWidth;
-    	double v = (b + (t-b) * (inV + 0.5))/viewHeight;
+    	double u = left + ((right-left) * (inU + 0.5))/viewWidth;
+    	double v = bottom + ((top-bottom) * (inV + 0.5))/viewHeight;
     	
+    	//computing origin
     	Vector3d vv = this.v.mul(v);
     	Vector3d uu = this.u.mul(u);
     	Vector3d uuvv = uu.add(vv);
+    	origin = e.add(uuvv);
     	
-    	origin = new Vector3d(viewPoint.x + uuvv.x,viewPoint.y + uuvv.y,viewPoint.z + uuvv.z);
-    	System.out.println(origin);
     	
     	//setting ray direction
-    	outRay.direction.x = this.rayDirection.x;
-    	outRay.direction.y = this.rayDirection.y;
-    	outRay.direction.z = this.rayDirection.z;
+    	outRay.direction.x = this.w.x;
+    	outRay.direction.y = this.w.y;
+    	outRay.direction.z = this.w.z;
     	
     	//setting ray origin
-    	outRay.origin.x = rayOriginU;
-    	outRay.origin.y = rayOriginV;
-    	outRay.origin.z = rayOriginZ;
+    	outRay.origin.x = origin.x;
+    	outRay.origin.y = origin.y;
+    	outRay.origin.z = origin.z;
     	
 
         

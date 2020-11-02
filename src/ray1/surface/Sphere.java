@@ -38,25 +38,61 @@ public class Sphere extends Surface {
    * @return true if the surface intersects the ray
    */
   public boolean intersect(IntersectionRecord outRecord, Ray rayIn) {
-	  	// TODO#Ray Task 2: fill in this function.
-	  	Vector3d rayOrigin = rayIn.origin;
-	  	Vector3d rayDirection = rayIn.direction;
-	  	double t1 = 0;
-	  	double t2 = 0;
-	  	double t;
-	  	double y;
-	  	
-	  	//calculations
-	  	Vector3d temp = new Vector3d(this.center.x - rayOrigin.x, this.center.y - rayOrigin.y, this.center.z - rayOrigin.z);
-	  	t = temp.dot(rayIn.direction);
-	  	
-	  	//outRecord.
-	    // If there was an intersection, fill out the intersection record
+	  // TODO#Ray Task 2: fill in this function.
+	  double xSphere, ySphere, zSphere;
+	  double a,b,c;
+	  double discriminant;
+	  Vector3d t0,t1;
+	  Vector3d numerator;
+	  Vector3d denominator;
+	  
+	  //a = Math.pow(rayIn.direction.x - rayIn.origin.x,2) + Math.pow(rayIn.direction.y - rayIn.origin.y,2) + Math.pow(rayIn.direction.z - rayIn.origin.z,2);
+	  //b = 2 * ((rayIn.direction.x-rayIn.origin.x) * (rayIn.origin.x-this.center.x) + (rayIn.direction.y-rayIn.origin.y) * (rayIn.origin.y-this.center.y)+ (rayIn.direction.z-rayIn.origin.z) * (rayIn.origin.z-this.center.z));
+	  
+	  a = rayIn.direction.dot(rayIn.direction);
+	  b = 2 * ((rayIn.direction.x-rayIn.origin.x) * (rayIn.origin.x-this.center.x) + (rayIn.direction.y-rayIn.origin.y) * (rayIn.origin.y-this.center.y)+ (rayIn.direction.z-rayIn.origin.z) * (rayIn.origin.z-this.center.z));
+	  c = Math.pow((rayIn.origin.x - this.center.x),2) +  Math.pow((rayIn.origin.y - this.center.y),2) +  Math.pow((rayIn.origin.z - this.center.z),2) - Math.pow(this.radius, 2);
+	  discriminant = Math.pow(b, 2) - (4*a*c);
+	  
+	  if (discriminant < 0)
+	  {
+		  return false;
+	  }
+	  else if(discriminant == 0)
+	  {
+		  return true;
+	  }
+	  else
+	  {
+		  Vector3d d = rayIn.direction;
+		  Vector3d e = rayIn.origin;
+		  // -d * (e-c)
+		  Vector3d partequation1 = d.mul(-1);
+		  partequation1 = d.mul(e.sub(this.center));
+		  // d*(e-c)]^2-(d*d)[(e-c)*(e-c)-R^2
+		  Vector3d partequation2temp = d.mul(e.sub(this.center)); 
+		  partequation2temp.x = partequation2temp.x * partequation2temp.x; 
+		  partequation2temp.y = partequation2temp.y * partequation2temp.y;
+		  partequation2temp.z = partequation2temp.z * partequation2temp.z;
+		  Vector3d partequation3temp = d.mul(d).mul(e.sub(this.center).mul(e.sub(this.center).sub(this.radius*this.radius))); 
+		  Vector3d partequation2 = partequation2temp.sub(partequation3temp);
+		  partequation2.x = Math.sqrt(partequation2.x);
+		  partequation2.y = Math.sqrt(partequation2.y);
+		  partequation2.z = Math.sqrt(partequation2.z);
+		  //t0
+		  numerator = partequation1.add(partequation2);
+		  denominator = d.mul(d);
+		  t0 = numerator.div(denominator);
+		  //t1
+		  numerator = partequation1.sub(partequation2);
+		  denominator = d.mul(d);
+		  t0 = numerator.div(denominator);
+		  outRecord.location.x = t0.x;
+		  outRecord.location.y = t0.y;
+		  outRecord.location.z = t0.z;
+		  return true;
+	  }
 
-	  	outRecord.t = t;
-	  	outRecord.location.x = rayDirection.x;
-	    
-	    return true;
   }
   
   /**

@@ -50,15 +50,15 @@ public class PerspectiveCamera extends Camera {
     	this.origin = new Vector3d(viewPoint.x, viewPoint.y, viewPoint.z);
     	
     	//orthonormal basis
-    	this.u = new Vector3d(1,0,0); //orthonormal basis
-    	this.v = new Vector3d(0,1,0); //orthonormal basis
-    	this.w = new Vector3d(viewDir.x, viewDir.y, -viewDir.z);
+    	this.u = new Vector3d(viewPoint.x + 1,viewPoint.y, viewPoint.z); //orthonormal basis
+    	this.v = new Vector3d(viewPoint.x ,viewPoint.y + 1, viewPoint.z); //orthonormal basis
+    	this.w = new Vector3d(viewPoint.x ,viewPoint.y, viewPoint.z + 1);
 		
     	//setting aspect ratio for the screen
     	this.aspectRatio = viewWidth/viewHeight;
         	
     	//Testing
-    	System.out.println(origin);
+    	//System.out.println(origin);
 
     }
 
@@ -84,12 +84,6 @@ public class PerspectiveCamera extends Camera {
     	outRay.origin.y = this.origin.y;
     	outRay.origin.z = this.origin.z;
     	
-    	//setting direction
-    	Vector3d direction;
-    	double rayOriginU = 0.0f;
-    	double rayOriginV = 0.0f;
-    	double rayOriginZ = 0.0f;
-    	
     	double l = -viewWidth/2;
     	double r = viewWidth/2;
     	
@@ -99,11 +93,17 @@ public class PerspectiveCamera extends Camera {
     	double u = (l + (r-l) * (inU + 0.5))/viewWidth;
     	double v = (b + (t-b) * (inV + 0.5))/viewHeight;
     	
+    	this.d = -this.d;
+    	Vector3d dw = this.w.mul(d);
     	Vector3d vv = this.v.mul(v);
     	Vector3d uu = this.u.mul(u);
     	Vector3d uuvv = uu.add(vv);
+    	Vector3d dwuuvv = uuvv.add(dw);  
     	
-    	direction = new Vector3d(viewPoint.x + uuvv.x,viewPoint.y + uuvv.y,viewPoint.z + uuvv.z);
-    	System.out.println(direction);
+    	//setting up direction
+    	outRay.direction.x = dwuuvv.x;
+    	outRay.direction.y = dwuuvv.y;
+    	outRay.direction.z = dwuuvv.z;
+    	//System.out.println(direction);
     }
 }

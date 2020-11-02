@@ -112,7 +112,7 @@ public abstract class Camera {
 	    float v = 0.11343f;
 	    Ray correctRay0 = new Ray(new Vector3d(0.6235493799051484f, 0.36878515466141304f, 2.084176425089877f), 
 	                              new Vector3d(0.22730915261287413f, -0.027671120744863338f, 0.9734294315537928f));
-	    //orthoCam.testGetRay(correctRay0, u, v);
+	    orthoCam.testGetRay(correctRay0, u, v);
 	    
 	    Ray correctRay1 = new Ray(new Vector3d(1.0f, 0.5f, 2.0f),
 	                              new Vector3d(-0.13811656557506483f, -0.14714072701594028f, 0.9794250460177998f));

@@ -23,7 +23,7 @@ public class Triangle extends Surface {
   /** The face that contains this triangle */
   public OBJFace face = null;
   
-  double a, b, c, d, e, f;
+  double a, b, c, d, e, f; // what are these ???? why are they not vector3d ???
   public Triangle(Mesh owner, OBJFace face, Shader shader) {
     this.owner = owner;
     this.face = face;
@@ -40,6 +40,7 @@ public class Triangle extends Surface {
       norm.set(e0).cross(e1).normalize();
     }
 
+    // what is that doing ???
     a = v0.x-v1.x;
     b = v0.y-v1.y;
     c = v0.z-v1.z;
@@ -63,7 +64,16 @@ public class Triangle extends Surface {
    */
   public boolean intersect(IntersectionRecord outRecord, Ray rayIn) {
     // TODO#Ray Part 1 Task 2: fill in this function.
+	//computing t
+	//double a = a.x - b.x;
+	//double b = a.y - b.y;
+	//double c = a.z - b.z;
 	  
+	 // what 
+	  
+	//if rayIn.end
+	  
+	 
     
     // If there was an intersection, fill out the intersection record
 	  
