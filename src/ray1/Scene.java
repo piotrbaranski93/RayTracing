@@ -158,11 +158,23 @@ public class Scene {
 		//          4) If anyIntersection is true, return immediately.
 		//		    5) Set outRecord to the IntersectionRecord of the first object hit.
 		//		    6) If there was an intersection, return true; otherwise return false.
-
-		boolean ret = false;
-	
-		return ret;
-//		 TODO#Ray Part 2: uncomment the following line, and comment your previous solution out.
-//		 return accelStruct.intersect(outRecord, rayIn, anyIntersection);
+		//********************************************************
+		//Local variables
+		//********************************************************
+		boolean r = false;
+		Ray newRay = new Ray(rayIn);
+		
+		//Looping over surfaces
+		for (Surface s : surfaces) {
+			if (s.intersect(outRecord, newRay)) {
+				if (anyIntersection) {
+					return true;
+				}
+				newRay.end = outRecord.t;
+				//changing to true
+				r = true;
+			}
+		}
+		return r;
 	}
 }

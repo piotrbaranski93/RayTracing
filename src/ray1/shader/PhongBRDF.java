@@ -30,8 +30,15 @@ public class PhongBRDF extends BRDF {
 	@Override
 	public void EvalBRDF(Vector3d incoming, Vector3d outgoing, Vector3d surfaceNormal, Vector2 texCoords, Colorf BRDFValue) 
 	{	
+		//Local variables
+		Vector3d h_vector;
+		Vector3 s;
+		
 		// TODO#Ray Task 5: Evaluate the BRDF value of Phong reflection model
-
+		h_vector = incoming.clone().normalize().add(outgoing.clone().normalize()).normalize();
+		s = specularColor.clone();
+		s.mul((float)Math.pow(Math.max(surfaceNormal.dot(h_vector), 0), exponent));
+		BRDFValue.set(getDiffuseReflectance(texCoords).clone().div((float)Math.PI).add(s));
 	}
 
 }

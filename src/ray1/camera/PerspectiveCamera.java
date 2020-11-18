@@ -47,19 +47,22 @@ public class PerspectiveCamera extends Camera {
     	this.d = Math.sqrt(Math.pow(viewDir.x,2) + Math.pow(viewDir.y,2) + Math.pow(viewDir.z,2));
     	
     	//get the origin
-    	this.origin = new Vector3d(viewPoint.x, viewPoint.y, viewPoint.z);
+    	//this.origin = new Vector3d(viewPoint.x, viewPoint.y, viewPoint.z);
     	
     	//orthonormal basis
-    	this.u = new Vector3d(viewPoint.x + 1,viewPoint.y, viewPoint.z); //orthonormal basis
-    	this.v = new Vector3d(viewPoint.x ,viewPoint.y + 1, viewPoint.z); //orthonormal basis
-    	this.w = new Vector3d(viewPoint.x ,viewPoint.y, viewPoint.z + 1);
+    	//this.u = new Vector3d(viewPoint.x + 1,viewPoint.y, viewPoint.z); //orthonormal basis
+    	//this.v = new Vector3d(viewPoint.x ,viewPoint.y + 1, viewPoint.z); //orthonormal basis
+    	//this.w = new Vector3d(viewPoint.x ,viewPoint.y, viewPoint.z + 1);
 		
     	//setting aspect ratio for the screen
-    	this.aspectRatio = viewWidth/viewHeight;
+    	//this.aspectRatio = viewWidth/viewHeight;
         	
     	//Testing
     	//System.out.println(origin);
 
+    	w = new Vector3d(viewDir.clone().negate().normalize());
+    	u = new Vector3d(viewUp).cross(w).normalize();
+    	v = w.clone().cross(u).normalize();
     }
 
     /**
@@ -79,31 +82,38 @@ public class PerspectiveCamera extends Camera {
         //    should depend on your transformed inU and inV and your basis vectors,
         //    as well as the projection distance.
 
+    	Vector3d origin, direction;
+    	
     	//setting origin
-    	outRay.origin.x = this.origin.x;
-    	outRay.origin.y = this.origin.y;
-    	outRay.origin.z = this.origin.z;
+    	//outRay.origin.x = this.origin.x;
+    	//outRay.origin.y = this.origin.y;
+    	//outRay.origin.z = this.origin.z;
     	
-    	double l = -viewWidth/2;
-    	double r = viewWidth/2;
+    	//double l = -viewWidth/2;
+    	//double r = viewWidth/2;
     	
-    	double b = -viewHeight/2;
-    	double t = viewHeight/2;
+    	//double b = -viewHeight/2;
+    	//double t = viewHeight/2;
     	 
-    	double u = (l + (r-l) * (inU + 0.5))/viewWidth;
-    	double v = (b + (t-b) * (inV + 0.5))/viewHeight;
+    	//double u = (l + (r-l) * (inU + 0.5))/viewWidth;
+    	//double v = (b + (t-b) * (inV + 0.5))/viewHeight;
     	
-    	this.d = -this.d;
-    	Vector3d dw = this.w.mul(d);
-    	Vector3d vv = this.v.mul(v);
-    	Vector3d uu = this.u.mul(u);
-    	Vector3d uuvv = uu.add(vv);
-    	Vector3d dwuuvv = uuvv.add(dw);  
+    	//this.d = -this.d;
+    	//Vector3d dw = this.w.mul(d);
+    	//Vector3d vv = this.v.mul(v);
+    	//Vector3d uu = this.u.mul(u);
+    	//Vector3d uuvv = uu.add(vv);
+    	//Vector3d dwuuvv = uuvv.add(dw);  
     	
     	//setting up direction
-    	outRay.direction.x = dwuuvv.x;
-    	outRay.direction.y = dwuuvv.y;
-    	outRay.direction.z = dwuuvv.z;
+    	//outRay.direction.x = dwuuvv.x;
+    	//outRay.direction.y = dwuuvv.y;
+    	//outRay.direction.z = dwuuvv.z;
     	//System.out.println(direction);
+    	
+    	origin = new Vector3d(viewPoint);
+    	direction = w.clone().mul(-getProjDistance()).addMultiple((inU - 0.5) * viewWidth, u).addMultiple((inV - 0.5) * viewHeight, v);
+    	outRay.set(origin, direction);
+    	
     }
 }

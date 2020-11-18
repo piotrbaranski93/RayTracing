@@ -36,41 +36,52 @@ public abstract class ReflectionShader extends Shader {
 	 */
 	@Override
 	public void shade(Colorf outIntensity, Scene scene, Ray ray, IntersectionRecord record, int depth) {
-		
+		//********************************************************
+		//Local variables
+		//********************************************************
 		Vector3d incoming = new Vector3d();
 		Vector3d outgoing = new Vector3d();
-				
+		double cosine_T;
+		double r2 = 0.0;	
+		Vector3d d_vector;
+		Vector3d r_vector;
+		Ray rayR_cal;
+		Vector3 reflectance;
+		Colorf outColor = new Colorf();
 		outgoing.set(ray.origin).sub(record.location).normalize();
 		Vector3d surfaceNormal = record.normal;
 		Vector2 texCoords = new Vector2(record.texCoords);
-		
 		Colorf BRDFVal = new Colorf();
-		
-		// direct reflection from light sources
 		outIntensity.setZero();
 		
-		// TODO#Ray Task 5: Fill in this function.
-				// 1) Loop through each light in the scene.
-				// 2) If the intersection point is shadowed, skip the calculation for the light.
-				//	  See Shader.java for a useful shadowing function.
-				// 3) Compute the incoming direction by subtracting
-				//    the intersection point from the light's position.
-				// 4) Compute the color of the point using the shading model. 
-				//	  EvalBRDF method of brdf object should be called to evaluate BRDF value at the shaded surface point.
-				// 5) Add the computed color value to the output.
-				// 6) If mirrorCoefficient is not zero vector, add recursive mirror reflection
-				//		6a) Compute the mirror reflection ray direction by reflecting the direction vector of "ray" about surface normal
-				//		6b) Construct mirror reflection ray starting from the intersection point (record.location) and pointing along 
-				//			direction computed in 6a) (Hint: remember to call makeOffsetRay to avoid self-intersecting)
-				//      6c) Compute the Fresnel's refectance coefficient with Schlick's approximation 
-				// 		6d) call RayTracer.shadeRay() with the mirror reflection ray and (depth+1)
-				// 		6e) add returned color value in 6d) to output
-		
-	
-		// recursive reflection
-
-
-		
+		//********************************************************
+		//Calculations and setting outIntensity
+		//********************************************************
+		//looping over light in scene
+		for (Light l : scene.getLights()) {
+			if (isShadowed(scene, l, record)) {
+				continue;
+			}
+			incoming.set(l.position).sub(record.location);
+			if (incoming.dot(surfaceNormal) < 0.0) {
+				continue;
+			}
+			r2 = incoming.lenSq();
+			incoming.normalize();
+			brdf.EvalBRDF(incoming, outgoing, surfaceNormal, texCoords, BRDFVal);
+			outIntensity.add(BRDFVal.clone().mul(l.intensity).mul((float)(Math.max(surfaceNormal.dot(incoming),0) / r2 )));
+		}
+		if (getMirrorCoefficient().equals(new Vector3 (0,0,0))) {
+			return;
+		}
+		d_vector = outgoing.clone().negate();
+		r_vector = d_vector.subMultiple(2 *d_vector.dot(surfaceNormal),surfaceNormal);
+		rayR_cal = new Ray(record.location, r_vector);
+		rayR_cal.makeOffsetRay();
+		cosine_T = surfaceNormal.dot(outgoing);
+		reflectance = getMirrorCoefficient().addMultiple((float)Math.pow(1-cosine_T, 5), new Colorf(1,1,1).sub(getMirrorCoefficient()));
+		RayTracer.shadeRay(outColor, scene, rayR_cal, depth+1);
+		outIntensity.add(outColor.mul(reflectance));	
 	}
 
 }

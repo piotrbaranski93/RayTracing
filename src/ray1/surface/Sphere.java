@@ -39,16 +39,31 @@ public class Sphere extends Surface {
    */
   public boolean intersect(IntersectionRecord outRecord, Ray rayIn) {
 	  // TODO#Ray Task 2: fill in this function.
+	  
+	  
+	  //********************************************************
+	  //Local variables
+	  //********************************************************
 	  double xSphere, ySphere, zSphere;
 	  double a,b,c;
 	  double discriminant;
-	  Vector3d t0,t1;
+	  double t1,t2;
+	  //Vector3d t0,t1;
 	  Vector3d numerator;
 	  Vector3d denominator;
+	  double dd, dec, ecec, delta;
+	  Vector3d ec = rayIn.origin.clone().sub(center);
+	  dd = rayIn.direction.dot(rayIn.direction);
+	  dec = rayIn.direction.dot(ec);
+	  ecec = ec.dot(ec);
+	  delta = Math.pow(dec, 2) - dd * (ecec - Math.pow(radius, 2));
+	  
+	  //Modifications
 	  
 	  //a = Math.pow(rayIn.direction.x - rayIn.origin.x,2) + Math.pow(rayIn.direction.y - rayIn.origin.y,2) + Math.pow(rayIn.direction.z - rayIn.origin.z,2);
 	  //b = 2 * ((rayIn.direction.x-rayIn.origin.x) * (rayIn.origin.x-this.center.x) + (rayIn.direction.y-rayIn.origin.y) * (rayIn.origin.y-this.center.y)+ (rayIn.direction.z-rayIn.origin.z) * (rayIn.origin.z-this.center.z));
 	  
+	  /*
 	  a = rayIn.direction.dot(rayIn.direction);
 	  b = 2 * ((rayIn.direction.x-rayIn.origin.x) * (rayIn.origin.x-this.center.x) + (rayIn.direction.y-rayIn.origin.y) * (rayIn.origin.y-this.center.y)+ (rayIn.direction.z-rayIn.origin.z) * (rayIn.origin.z-this.center.z));
 	  c = Math.pow((rayIn.origin.x - this.center.x),2) +  Math.pow((rayIn.origin.y - this.center.y),2) +  Math.pow((rayIn.origin.z - this.center.z),2) - Math.pow(this.radius, 2);
@@ -92,7 +107,32 @@ public class Sphere extends Surface {
 		  outRecord.location.z = t0.z;
 		  return true;
 	  }
-
+	  */
+	  if (delta < 0.0) 
+	  {
+		  return false; 
+	  }
+	  t1 = (- dec - Math.sqrt(delta)) / dd;
+	  t2 = (- dec - Math.sqrt(delta)) / dd;
+	  if (t1 > rayIn.start && t1 < rayIn.end) {
+		  outRecord.t = t1;
+	  }
+	  else if (t2 > rayIn.start && t2 < rayIn.end)
+	  {
+		  outRecord.t = t2;
+	  }
+	  else {
+		  return false;
+	  }
+	 
+	  //********************************************************
+	  //Settign outRecord for output and testing
+	  //******************************************************** 
+	 outRecord.surface = this;
+	 rayIn.evaluate(outRecord.location, outRecord.t);
+	 outRecord.normal.set(outRecord.location.clone().sub(center).normalize());
+	 outRecord.texCoords.set(Math.acos(outRecord.location.y/radius),Math.atan2(outRecord.location.z, outRecord.location.x));
+	 return true;
   }
   
   /**
